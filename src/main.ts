@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import SSM from 'aws-sdk/clients/ssm';
+import {SSMClient, GetParameterCommand} from '@aws-sdk/client-ssm';
 
 type ActionParams = {
   envVariable: string;
@@ -26,17 +26,16 @@ const getAndValidateArgs = (): ActionParams => {
 
 export const main = async (): Promise<void> => {
   const actionParam = getAndValidateArgs();
-  const ssm = new SSM();
+  const ssmClient = new SSMClient({});
   core.startGroup('Injecting secret environment variables');
 
   let result;
   try {
-    result = await ssm
-      .getParameter({
-        Name: actionParam.ssmParameter,
-        WithDecryption: true, // NOTE: this flag is ignored for String and StringList parameter types
-      })
-      .promise();
+    const command = new GetParameterCommand({
+      Name: actionParam.ssmParameter,
+      WithDecryption: true, // NOTE: this flag is ignored for String and StringList parameter types
+    });
+    result = await ssmClient.send(command);
   } catch (error) /* istanbul ignore next */ {
     if (error instanceof Error) {
       core.setFailed(error.message);

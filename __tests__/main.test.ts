@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import {mockGetParameter} from 'aws-sdk/clients/ssm';
+import {mockSend, GetParameterCommand} from '@aws-sdk/client-ssm';
 import {main} from '../src/main';
 
 describe('main handler', () => {
@@ -22,8 +22,8 @@ describe('main handler', () => {
   it('is able to successfully inject a secret as an environment variable', async () => {
     await main();
 
-    expect(mockGetParameter).toHaveBeenCalledTimes(1);
-    expect(mockGetParameter).toHaveBeenCalledWith({
+    expect(mockSend).toHaveBeenCalledTimes(1);
+    expect(GetParameterCommand).toHaveBeenCalledWith({
       Name: '/build-secrets/production/cloudflare-account-id',
       WithDecryption: true,
     });
