@@ -6,6 +6,8 @@ Note: This action is based on and forked from https://github.com/marvinpinto/act
 
 ---
 
+**Now upgraded to AWS SDK V3!** This version uses the modern, modular AWS SDK V3 for improved performance, smaller bundle sizes, and better TypeScript support.
+
 This action injects AWS SSM Parameter Store secrets as environment variables into your GitHub Actions builds.
 
 It makes it easier to follow [Amazon IAM best practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html) in respect to principle of least privilege and tracking credentials usage. Combined with the `aws-actions/configure-aws-credentials` action, this allows you to inject any combination of secrets from multiple stores, using different credential contexts.
@@ -14,6 +16,7 @@ It makes it easier to follow [Amazon IAM best practices](https://docs.aws.amazon
 
 1. [Usage Examples](#usage-examples)
 1. [Supported Parameters](#supported-parameters)
+1. [AWS SDK V3 Upgrade](#aws-sdk-v3-upgrade)
 1. [Versioning](#versioning)
 1. [License](#license)
 
@@ -47,12 +50,12 @@ jobs:
           role-to-assume: "arn:aws:iam::111111111111:role/build-and-deploy-website"
           role-duration-seconds: 1800 # 30 mins
 
-      - uses: "department-of-veterans-affairs/action-inject-ssm-secrets@latest"
+      - uses: "vj-ramirez/action-inject-ssm-secrets@latest"
         with:
           ssm_parameter: "/build-secrets/${{ env.BUILD_STAGE }}/cloudflare-account-id"
           env_variable_name: "cloudflare_account_id"
 
-      - uses: "department-of-veterans-affairs/action-inject-ssm-secrets@latest"
+      - uses: "vj-ramirez/action-inject-ssm-secrets@latest"
         with:
           ssm_parameter: "/build-secrets/${{ env.BUILD_STAGE }}/cloudflare-api-token"
           env_variable_name: "cloudflare_api_token"
@@ -73,12 +76,31 @@ jobs:
 
 - Parameters denoted with `**` are required.
 
+## AWS SDK V3 Upgrade
+
+This action has been upgraded from AWS SDK V2 to V3, bringing several improvements:
+
+### Benefits
+- **Smaller Bundle Size**: Modular architecture reduces bundle size by including only the SSM client
+- **Better Performance**: Improved startup time and memory usage
+- **Modern TypeScript**: Built with TypeScript-first approach for better type safety
+- **Tree Shaking**: Better dead code elimination during builds
+- **Future-Proof**: Uses the actively maintained AWS SDK version
+
+### Technical Changes
+- Migrated from `aws-sdk` v2 to `@aws-sdk/client-ssm` v3
+- Updated to command-based API patterns (`GetParameterCommand`)
+- Modernized client instantiation and method calls
+- Maintained 100% backward compatibility for action usage
+
+The action interface remains identical - no changes required to your workflow files.
+
 ## Versioning
 
 Every commit that lands on main for this project triggers an automatic build as well as a tagged release called `latest`. If you don't wish to live on the bleeding edge you may use a stable release instead. See [releases](../../releases/latest) for the available versions.
 
 ```yaml
-- uses: "department-of-veterans-affairs/action-inject-ssm-secrets@<VERSION>"
+- uses: "vj-ramirez/action-inject-ssm-secrets@<VERSION>"
 ```
 
 ## Development
